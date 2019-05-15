@@ -1,15 +1,6 @@
 #include <stdio.h>
 #include <locale.h>
 
-/*
-TODO Configurador de Perguntas
-    Jogar
-    Escolher aleatoriamente 10 perguntas no arquivo;
-    Usuário responde e deve ser feita a pontuação;
-    Gravar em arquivos a pontuação dos jogadores;
-    Mostrar jogador com maior pontuação;
-    Tudo modularizado.*/
-
 void generateQuestions(FILE **questions)
 {
     
