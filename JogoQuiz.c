@@ -4,8 +4,8 @@
 #include <conio.h>
 #include <string.h>
 
-#define MAX_QTD_QUESTIONS 14
-#define QTD_QUESTIONS 9
+#define MAX_QTD_QUESTIONS 15
+#define QTD_QUESTIONS 10
 
 typedef struct
 {
