@@ -1,2 +1,4 @@
-.vscode*
-.directory*
+
+teste.exe
+.vscode/*
+teste.c
