@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <locale.h>
+#include <conio.h>
 
 void generateQuestions(FILE **questions)
 {
@@ -15,14 +17,7 @@ int main()
 
     printf("Bem vindo ao Quiz de conhecimento geral!\n");
     printf("Todas as perguntas abrangem vários assuntos diversos, acerto o máximo que puder!!\n");
-    printf("Em qual dificuldade gostaria de jogar?\n\n");
-    printf("Fácil (1);\n");
-    printf("Mediano (2);\n");
-    printf("Difícil (3);\n");
-    printf("Sair (4)\n\n");
-    printf("Escolha: ");
-    sscanf("%d", &dificulty);
-    
+    getch();    
 
     switch (dificulty)
     {
@@ -33,8 +28,6 @@ int main()
     default:
         break;
     }
-
-    printf("Escolha a dificuldade: ");
 
     generateQuestions(&questions);
 
