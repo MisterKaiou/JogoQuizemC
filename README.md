@@ -24,6 +24,8 @@ Mostrar jogador com maior pontuação:
 
 Tudo modularizado;
 
+**Plataforma compatível: Windows**
+
 
 ## Deselvolvedores:
 

@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <string.h>
+#include <time.h>
 #include <windows.h>
 
 #define MAX_QTD_QUESTIONS 15
 #define QTD_QUESTIONS 10
+#define NAME_SIZE 20
 
 struct list
 {
@@ -15,25 +17,26 @@ struct list
     char answers3[50];
     char answers4[50];
     char answers5[50];
-    char correctAnswer[1];
+    char correctAnswer;
     char trivia[110];
 } quizGame[MAX_QTD_QUESTIONS];
 
-typedef struct
+struct scores
 {
-    char name[20];
-    int placar;
-} topScores;
+    char name[NAME_SIZE];
+    int score;
+} topScores[50];
 
-//Function that generates the file with the questions.
 void generateQuestions(FILE *ql)
 {
-    ql = fopen("QuestionsList.dat", "wb");
+    int i = 0;
 
-    if(ql == NULL)
+    if ((ql = fopen("QuestionsList.dat", "rb") == NULL)) 
+        ql = fopen("QuestionsList.dat", "wb");
+    else
     {
-        printf("Erro ao abrir arquivo!\n");
-        perror("Erro:");
+        ql = fopen("QuestionsList.dat", "ab");
+        return;
     }
 
     strcpy(quizGame[0].question, "What is the name of the princess you have to save in the video game, -Zelda-?");
@@ -42,8 +45,8 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[0].answers3, "c) Navi");
     strcpy(quizGame[0].answers4, "d) Peach");
     strcpy(quizGame[0].answers5, "e) Daysy");
-    strcpy(quizGame[0].correctAnswer, "b");
-    strcpy(quizGame[0].trivia, "Zelda - Link is the name of the character that tries to save Zelda.");
+    quizGame[0].correctAnswer = 'b';
+    strcpy(quizGame[0].trivia, "Zelda - Link tries to save Zelda.");
 
     strcpy(quizGame[1].question, "What is the bestselling video game for the Nintendo 64 console?");
     strcpy(quizGame[1].answers1, "a) Mario Kart 64");
@@ -51,7 +54,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[1].answers3, "c) Super Smash Bros");
     strcpy(quizGame[1].answers4, "d) Golden Eye");
     strcpy(quizGame[1].answers5, "e) Metal Gear");
-    strcpy(quizGame[1].correctAnswer, "b");
+    quizGame[1].correctAnswer = 'b';
     strcpy(quizGame[1].trivia, "Super Mario 64 - Super Mario has sold approximately 11.62 million copies.");
 
     strcpy(quizGame[2].question, "What is the name of the main character in the strategy video game, -Pikmin-?");
@@ -60,7 +63,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[2].answers3, "c) Olimar");
     strcpy(quizGame[2].answers4, "d) Albious");
     strcpy(quizGame[2].answers5, "e) Louie");
-    strcpy(quizGame[2].correctAnswer, "c");
+    quizGame[2].correctAnswer = 'c';
     strcpy(quizGame[2].trivia, "Olimar - Olimar is from the planet Hocotate.");
 
     strcpy(quizGame[3].question, "Developed by Capcom, what is the name of the main character in the video game series, -Devil May Cry-?");
@@ -69,7 +72,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[3].answers3, "c) Nero");
     strcpy(quizGame[3].answers4, "d) Mondus");
     strcpy(quizGame[3].answers5, "e) Vergil");
-    strcpy(quizGame[3].correctAnswer, "a");
+    quizGame[3].correctAnswer = 'a';
     strcpy(quizGame[3].trivia, "Dante - The series revolves around the death of his mother Eva.");
 
     strcpy(quizGame[4].question, "What is the name of the second installment of the -Elder Scrolls-?");
@@ -78,7 +81,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[4].answers3, "c) Morrowind");
     strcpy(quizGame[4].answers4, "d) Daggerfall");
     strcpy(quizGame[4].answers5, "e) Blades");
-    strcpy(quizGame[4].correctAnswer, "d");
+    quizGame[4].correctAnswer = 'd';
     strcpy(quizGame[4].trivia, "Daggerfall - The lastest Elder Scroll that was announced was titled Blades(2019).");
 
     strcpy(quizGame[5].question, "Who is the main character in the -Metal Gear Solid- video game series?");
@@ -87,7 +90,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[5].answers3, "c) Gaiden");
     strcpy(quizGame[5].answers4, "d) Vulcan");
     strcpy(quizGame[5].answers5, "e) Quiet");
-    strcpy(quizGame[5].correctAnswer, "b");
+    quizGame[5].correctAnswer = 'b';
     strcpy(quizGame[5].trivia, "Snake - Metal Gear Solid was first published by Konami in 1998.");
 
     strcpy(quizGame[6].question, "The video game -World at War- comes from what video game series?");
@@ -96,7 +99,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[6].answers3, "c) Halo");
     strcpy(quizGame[6].answers4, "d) Call of Duty");
     strcpy(quizGame[6].answers5, "e) Medal of Honor");
-    strcpy(quizGame[6].correctAnswer, "d");
+    quizGame[6].correctAnswer = 'd';
     strcpy(quizGame[6].trivia, "Call of Duty - World at War came out in 2008.");
 
     strcpy(quizGame[7].question, "What company published the FPS video game, -Far Cry 4-?");
@@ -105,7 +108,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[7].answers3, "c) Microsoft");
     strcpy(quizGame[7].answers4, "d) Ubisoft");
     strcpy(quizGame[7].answers5, "e) Rockstar");
-    strcpy(quizGame[7].correctAnswer, "d");
+    quizGame[7].correctAnswer = 'd';
     strcpy(quizGame[7].trivia, "Ubisoft - Other games from Ubisoft are Splinter Cell, Assassin's Creed, Rainbow Six and Prince of Persia.");
 
     strcpy(quizGame[8].question, "What video game features the hero B. J. Blazkowicz?");
@@ -114,7 +117,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[8].answers3, "c) Halo ODST");
     strcpy(quizGame[8].answers4, "d) Doom 3");
     strcpy(quizGame[8].answers5, "e) Boarderlands 3");
-    strcpy(quizGame[8].correctAnswer, "b");
+    quizGame[8].correctAnswer = 'b';
     strcpy(quizGame[8].trivia, "Wolfenstein, The New Order - Blazkowicz leads a counter-offensive against a Nazi regime.");
 
     strcpy(quizGame[9].question, "What is the fictional continent that the video game -Fable III- takes place in?");
@@ -123,7 +126,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[9].answers3, "c) Nether Realm");
     strcpy(quizGame[9].answers4, "d) Albion");
     strcpy(quizGame[9].answers5, "e) Anor Londo");
-    strcpy(quizGame[9].correctAnswer, "d");
+    quizGame[9].correctAnswer = 'd';
     strcpy(quizGame[9].trivia, "Albion - Fable III takes place fifty years after Fable II ends, and Logan has now taken the throne.");
 
     strcpy(quizGame[10].question, "In what video game can you be a human or an Irathian?");
@@ -132,7 +135,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[10].answers3, "c) Darkspore");
     strcpy(quizGame[10].answers4, "d) Titanfall");
     strcpy(quizGame[10].answers5, "e) Black Desert");
-    strcpy(quizGame[10].correctAnswer, "b");
+    quizGame[10].correctAnswer = 'b';
     strcpy(quizGame[10].trivia, "Defiance - In the DLC for Defiance, you can also be a Castithan.");
 
     strcpy(quizGame[11].question, "Who is the main character in Kingdom Hearts?");
@@ -141,7 +144,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[11].answers3, "c) Kairi");
     strcpy(quizGame[11].answers4, "d) Sora");
     strcpy(quizGame[11].answers5, "e) Ventus");
-    strcpy(quizGame[11].correctAnswer, "d");
+    quizGame[11].correctAnswer = 'd';
     strcpy(quizGame[11].trivia, "Sora - Best friends with Riku and Kairi, Sora is a cheerful teenager who lives on Destiny Islands.");
 
     strcpy(quizGame[12].question, "In what game would you encounter enemies called -Big Daddies-?");
@@ -150,7 +153,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[12].answers3, "c) Doom");
     strcpy(quizGame[12].answers4, "d) Bioshock");
     strcpy(quizGame[12].answers5, "e) Postal");
-    strcpy(quizGame[12].correctAnswer, "d");
+    quizGame[12].correctAnswer = 'd';
     strcpy(quizGame[12].trivia, "Bioshock - Bioshock takes place in the underwater world of Rapture.");
 
     strcpy(quizGame[13].question, "Where does the game S.T.A.L.K.E.R. take place?");
@@ -159,7 +162,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[13].answers3, "c) Ukraine");
     strcpy(quizGame[13].answers4, "d) Germany");
     strcpy(quizGame[13].answers5, "e) Siberia");
-    strcpy(quizGame[13].correctAnswer, "c");
+    quizGame[13].correctAnswer = 'c';
     strcpy(quizGame[13].trivia, "Ukraine - S.T.A.L.K.E.R. takes place after the Chernobyl nuclear accident.");
 
     strcpy(quizGame[14].question, "In what video game would you find the character -Jackie Estacado-?");
@@ -168,7 +171,7 @@ void generateQuestions(FILE *ql)
     strcpy(quizGame[14].answers3, "c) Resident Evil");
     strcpy(quizGame[14].answers4, "d) Homefront");
     strcpy(quizGame[14].answers5, "e) The Observer");
-    strcpy(quizGame[14].correctAnswer, "a");
+    quizGame[14].correctAnswer = 'a';
     strcpy(quizGame[14].trivia, "The Darkness - 'I remember the night of my 21st birthday, that was the first time I died.' - Jackie Estacado.");
 
     fwrite(&quizGame, sizeof(quizGame), 1, ql);
@@ -176,10 +179,33 @@ void generateQuestions(FILE *ql)
     fclose(ql);
 }
 
+char getChoice(char *ch, int randomizer, int *sc)
+{
+    fflush(stdin);
+    *ch = fgetchar();
+
+    while (*ch != 'a' && *ch != 'b' && *ch != 'c' && *ch != 'd' && *ch != 'e' && *ch != 'A' && *ch != 'B' && *ch != 'C' && *ch != 'D' && *ch != 'E')
+    {
+        printf("Invalid choice, please try again: ");
+        fflush(stdin);
+        *ch = fgetchar();
+    }
+
+    if (*ch == quizGame[randomizer].correctAnswer || *ch == quizGame[randomizer].correctAnswer - 32)
+    {
+        printf("Correct!! %s", quizGame[randomizer].trivia);
+        ++*sc;
+    }
+    else
+        printf("Wrong!! %s", quizGame[randomizer].trivia);
+}
+
 void play(FILE *ql)
 {
-    int counter, questionNumber = 1;
-    char choice;
+    int counter, questionNumber = 1, score = 0, randomizer, randVector[QTD_QUESTIONS] = {NULL}, i, j;
+    char choice, playerName[NAME_SIZE];
+    unsigned char used[MAX_QTD_QUESTIONS] = {0};
+    srand(time(NULL));
 
     ql = fopen("QuestionsList.dat", "rb");
 
@@ -192,35 +218,63 @@ void play(FILE *ql)
 
     fread(&quizGame, sizeof(quizGame), 1, ql);
 
+    j = 0;
+
+    do
+    {
+        randomizer = rand() % MAX_QTD_QUESTIONS;
+        for(i = 0; i < j; i++)
+        {
+            if (j == 0) break;
+
+            if (used[randomizer])
+            {
+                randomizer = i;
+            }
+        }
+
+        randVector[j] = randomizer;
+        j++;
+
+        used[randomizer] = 1;
+
+    } while (j < QTD_QUESTIONS);
+
+    j = 0;
+
     for(counter = 0; counter < QTD_QUESTIONS; counter++)
     {
+        j = randVector[counter];
         system("cls");
-        printf("Question number %i\n\n", questionNumber++);
-        printf("%s\n", quizGame[counter].question);
-        printf("%s\n", quizGame[counter].answers1);
-        printf("%s\n", quizGame[counter].answers2);
-        printf("%s\n", quizGame[counter].answers3);
-        printf("%s\n", quizGame[counter].answers4);
-        printf("%s\n", quizGame[counter].answers5);
+        printf("Your score: %i\n\n", score);
+        printf("Question number: %i:\n", questionNumber++);
+        printf("%s\n", quizGame[j].question);
+        printf("%s\n", quizGame[j].answers1);
+        printf("%s\n", quizGame[j].answers2);
+        printf("%s\n", quizGame[j].answers3);
+        printf("%s\n", quizGame[j].answers4);
+        printf("%s\n\n", quizGame[j].answers5);
         printf("Your choice: "); 
-        fflush(stdin);
-        choice = fgetchar();
+
+        getChoice(&choice, randomizer, &score);
+        printf("\nPress any key to continue... ");
+        getch();
     }
     fclose(ql);
 }
 
 void menu(FILE *ql, int *failsafe)
 {
-    int selection;
+    int selection = 0;
 
     system("cls");
 
     printf("-------GAMES QUIZ-------\n");
-    printf("|1 Play                |\n");
-    printf("|2 Leaderboards        |\n");
-    printf("|3 Credits             |\n");
-    printf("|4 Manage Questions    |\n");
-    printf("|5 Exit                |\n");
+    printf("|1 - Play                |\n");
+    printf("|2 - Leaderboards        |\n");
+    printf("|3 - Credits             |\n");
+    printf("|4 - Manage Questions    |\n");
+    printf("|5 - Exit                |\n");
     printf("------------------------\n");
     scanf("%i", &selection);
 
@@ -230,7 +284,7 @@ void menu(FILE *ql, int *failsafe)
         play(&ql);
         failsafe = 0;
         break;
-    
+
     /*case 2:
         leaderbords();
         break;
@@ -242,7 +296,7 @@ void menu(FILE *ql, int *failsafe)
     case 4:
         manageQuestions();
     */
-   case 5:
+    case 5:
         exit(0);
         break;
 
