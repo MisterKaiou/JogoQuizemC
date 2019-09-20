@@ -8,6 +8,7 @@
 #define MAX_QTD_QUESTIONS 15
 #define QTD_QUESTIONS 10
 #define NAME_SIZE 20
+#define MAX_ENTRIES 20
 
 struct list
 {
@@ -25,7 +26,7 @@ struct scores
 {
     char name[NAME_SIZE];
     int score;
-} topScores[50];
+} topScores[MAX_ENTRIES];
 
 void generateQuestions(FILE *ql)
 {
@@ -179,7 +180,7 @@ void generateQuestions(FILE *ql)
     fclose(ql);
 }
 
-char getChoice(char *ch, int randomizer, int *sc)
+void getChoice(char *ch, int j, int *sc)
 {
     fflush(stdin);
     *ch = fgetchar();
@@ -191,21 +192,41 @@ char getChoice(char *ch, int randomizer, int *sc)
         *ch = fgetchar();
     }
 
-    if (*ch == quizGame[randomizer].correctAnswer || *ch == quizGame[randomizer].correctAnswer - 32)
+    if (*ch == quizGame[j].correctAnswer || *ch == quizGame[j].correctAnswer - 32)
     {
-        printf("Correct!! %s", quizGame[randomizer].trivia);
+        printf("Correct!! %s", quizGame[j].trivia);
+
         ++*sc;
     }
     else
-        printf("Wrong!! %s", quizGame[randomizer].trivia);
+        printf("Wrong!! %s", quizGame[j].trivia);
 }
 
-void play(FILE *ql)
+int play(FILE *ql, int *score, char playerName[NAME_SIZE])
 {
-    int counter, questionNumber = 1, score = 0, randomizer, randVector[QTD_QUESTIONS] = {NULL}, i, j;
-    char choice, playerName[NAME_SIZE];
+    int counter, questionNumber = 1, randomizer, randVector[QTD_QUESTIONS] = {NULL}, i, j, temp;
+    char choice;
     unsigned char used[MAX_QTD_QUESTIONS] = {0};
     srand(time(NULL));
+    *score = 0;
+    
+    do
+    {
+        system("cls");
+        printf("What's your name: ");
+        fflush(stdin);
+        fgets(playerName, NAME_SIZE, stdin);
+        temp = strlen(playerName) - 1;
+        playerName[temp] = '\0';
+
+        if (strlen(playerName) == NULL)
+        {
+            printf("Please, type a valid name...\n");
+            Sleep(1500);
+        }
+        
+
+    } while (strlen(playerName) == NULL);
 
     ql = fopen("QuestionsList.dat", "rb");
 
@@ -213,6 +234,7 @@ void play(FILE *ql)
     {
         printf("Error opening file!\n");
         perror("Error:");
+        getch();
         exit(1);
     }
 
@@ -246,7 +268,7 @@ void play(FILE *ql)
     {
         j = randVector[counter];
         system("cls");
-        printf("Your score: %i\n\n", score);
+        printf("Your score: %i\n\n", *score);
         printf("Question number: %i:\n", questionNumber++);
         printf("%s\n", quizGame[j].question);
         printf("%s\n", quizGame[j].answers1);
@@ -255,25 +277,86 @@ void play(FILE *ql)
         printf("%s\n", quizGame[j].answers4);
         printf("%s\n\n", quizGame[j].answers5);
         printf("Your choice: "); 
+        getChoice(&choice, j, score);
 
-        getChoice(&choice, randomizer, &score);
-        printf("\nPress any key to continue... ");
+        printf("\n\nPress any key to continue... ");
         getch();
     }
     fclose(ql);
+
+    return &score;
 }
+
+void leaderboards(FILE *ql, int *score, char playerName[NAME_SIZE])
+{
+    int entryCounter = 0, i;
+    char teste1, teste2;
+
+    ql = fopen("Leaderboards.dat", "ab+");
+
+    if (ql == NULL)
+    {
+        printf("Error when creating leaderboards file...");
+        perror("Error:");
+        return;
+    }
+
+    fread(&topScores, sizeof(topScores), 1, ql);
+
+    teste1 = (teste1 == topScores[0].name);
+
+    if (strcmp(topScores[0].name, "") == 0 || strcmp(playerName, "") == 0)
+    {
+        system("cls");
+
+        for (i = 0; i < MAX_ENTRIES; i++)
+        {
+            if(strcmp(topScores[i].name, "") != 0) ++entryCounter;
+        }
+
+        if(strlen(playerName) == NULL)
+        {   
+            strcpy(topScores[entryCounter].name, playerName);
+            topScores[entryCounter].score = *score;
+            fwrite(&topScores, sizeof(topScores), 1, ql);
+        }
+
+        for(i = 0; i <= entryCounter; i++)
+        {
+            printf("%s", topScores[i].name);
+            printf("%c%i\n", 9, topScores[i].score);
+        }
+        getch();
+    }
+
+    else if (strlen(topScores[0].name) == NULL)
+    {
+        system("cls");
+        printf("There aren't any leaderboards yet, play a round and check back!");
+        printf("\n\nPress any key to continue...");
+        getch();
+        ql = fopen("Leaderboards.dat", "ab+");
+    }
+    else
+        ql = fopen("Leaderboards.dat", "ab+");
+
+    fclose(ql);
+}
+
+
 
 void menu(FILE *ql, int *failsafe)
 {
-    int selection = 0;
+    int selection = 0, score;
+    char playerName[NAME_SIZE] = {NULL};
 
     system("cls");
 
     printf("-------GAMES QUIZ-------\n");
     printf("|1 - Play                |\n");
     printf("|2 - Leaderboards        |\n");
-    printf("|3 - Credits             |\n");
-    printf("|4 - Manage Questions    |\n");
+    printf("|3 - Manage Questions    |\n");
+    printf("|4 - Credits             |\n");
     printf("|5 - Exit                |\n");
     printf("------------------------\n");
     scanf("%i", &selection);
@@ -281,15 +364,18 @@ void menu(FILE *ql, int *failsafe)
     switch (selection)
     {
     case 1:
-        play(&ql);
-        failsafe = 0;
+        play(&ql, &score, playerName);
+        leaderboards(&ql, &score, playerName);
+        *failsafe = 1;
         break;
 
-    /*case 2:
-        leaderbords();
+    case 2:
+        playerName[NAME_SIZE] = NULL;
+        leaderboards(&ql, score, playerName);
+        *failsafe = 1; 
         break;
     
-    case 3:
+    /*case 3:
         credits();
         break;
 
@@ -303,7 +389,7 @@ void menu(FILE *ql, int *failsafe)
     default:
         printf("Invalid choice");
         fgetchar();
-        failsafe = 0;
+        failsafe = 1;
         break;
     }
 }
@@ -320,7 +406,7 @@ int main()
 
     generateQuestions(&ql);
 
-    while(failsafe == 1) menu(&ql, failsafe);
+    while(failsafe == 1) menu(&ql, &failsafe);
 
     getch();
 }
